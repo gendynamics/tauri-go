@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Tauri Go</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: #e0e0e0; margin: 0; padding: 2rem 1.5rem; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    h1 { font-size: 2.2rem; margin-bottom: 0.5rem; color: #00d4ff; }
+    p.subtitle { color: #888; margin-bottom: 2rem; text-align: center; }
+    .card { background: #1a1a1a; border-radius: 16px; padding: 1.5rem; width: 100%; max-width: 380px; box-shadow: 0 8px 32px rgba(0,212,255,0.1); }
+    input[type="text"] { width: 100%; padding: 0.9rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; font-size: 1rem; margin-bottom: 1rem; }
+    button { width: 100%; padding: 0.9rem; border: none; border-radius: 10px; background: #00d4ff; color: #000; font-weight: 600; font-size: 1rem; cursor: pointer; margin-bottom: 0.75rem; }
+    button.secondary { background: #333; color: #fff; }
+    .status { margin-top: 1rem; font-size: 0.9rem; text-align: center; min-height: 1.2em; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Tauri Go</h1>
+  <p class="subtitle">Connect to your Mac's dev server<br>Hot reload. Instant design feedback.</p>
+  <div class="card">
+    <input id="url" type="text" placeholder="http://192.168.1.x:1420" autocomplete="off" />
+    <button id="connect">Connect & Load App</button>
+    <button id="scan" class="secondary">Scan QR Code</button>
+    <button id="fallback" class="secondary hidden">Use Bundled Frontend</button>
+    <div id="status" class="status"></div>
+  </div>
+  <script>
+    const STORAGE_KEY = "tauri-go-last-url";
+    const urlInput = document.getElementById("url");
+    const statusEl = document.getElementById("status");
+    const fallbackBtn = document.getElementById("fallback");
+    const last = localStorage.getItem(STORAGE_KEY);
+    if (last) urlInput.value = last;
+    async function tryConnect(url) {
+      statusEl.textContent = "Checking connection...";
+      try {
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 3000);
+        await fetch(url, { method: "HEAD", mode: "no-cors", signal: controller.signal });
+        localStorage.setItem(STORAGE_KEY, url);
+        statusEl.textContent = "Connected! Loading app...";
+        window.location.href = url;
+      } catch (e) {
+        statusEl.textContent = "Cannot reach server. Check Wi-Fi and URL.";
+        fallbackBtn.classList.remove("hidden");
+      }
+    }
+    document.getElementById("connect").onclick = () => {
+      const url = urlInput.value.trim();
+      if (!url.startsWith("http")) { statusEl.textContent = "Enter a full http:// address"; return; }
+      tryConnect(url);
+    };
+    if (last) setTimeout(() => tryConnect(last), 400);
+    fallbackBtn.onclick = () => { window.location.href = "tauri://localhost/index.html"; };
+    document.getElementById("scan").onclick = () => { statusEl.textContent = "QR scanning requires camera permission and html5-qrcode. Enter URL manually for now."; };
+  </script>
+</body>
+</html>
