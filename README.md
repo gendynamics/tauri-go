@@ -4,15 +4,15 @@
 
 This is the missing bridge. Just as Tesla dreamed of energy that flows freely through the air, and Elon builds the infrastructure that turns vision into planetary scale, Tauri Go lets your Rust-powered Tauri commands live on the iPhone while your frontend iterates at the speed of thought.
 
-## Phase 1 — Private shell for Quincidia (proof of concept)
+## Phase 1 — Private development shell
 
-- Tauri 2 iOS app that bundles Quincidia’s current Rust code and Tauri commands
+- Tauri 2 iOS app that bundles your current Rust code and Tauri commands
 - Launch screen: scan a QR code or enter the dev server address on local Wi-Fi
 - Load the frontend live from the dev server with hot reload
 - Remember the last server; auto-reconnect; fall back to the bundled frontend if unreachable
 - Shake gesture or hidden button to reload or switch server
 - Mac-side script: start the dev server on the LAN and print a QR code
-- Keep Quincidia’s design and Rust logic exactly as they are
+- Keep your design and Rust logic exactly as they are
 - Cloud build (GitHub Actions macOS runner) → upload to TestFlight
 
 ## Integration Steps
@@ -23,7 +23,7 @@ This is the missing bridge. Just as Tesla dreamed of energy that flows freely th
 4. Configure Vite to honor `TAURI_DEV_HOST` / `--host 0.0.0.0`.
 5. Set Apple signing secrets and run the workflow.
 
-Your existing `src-tauri` Rust code is reused verbatim.
+Your existing `src-tauri` Rust code is reused verbatim. The shell is only the delivery vehicle.
 
 ## Vision
 
